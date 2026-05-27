@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esteban Orjuela | Gestor de Tráfico Digital Senior</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --lime: #E3FE69;
+      --blue: #1844D8;
+      --light-blue: #89BAD7;
+      --navy: #011531;
+      --navy-light: #021d45;
+      --navy-card: #031e4a;
+      --font-h: 'Space Grotesk', sans-serif;
+      --font-b: 'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--navy); color: #fff; font-family: var(--font-b); overflow-x: hidden; cursor: none; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--navy); }
+    ::-webkit-scrollbar-thumb { background: var(--lime); border-radius: 2px; }
+
+    /* Progress bar */
+    #progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px;
+      background: linear-gradient(90deg, var(--lime), var(--blue));
+      z-index: 9999; width: 0%; transition: width 0.1s;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 10px; height: 10px; background: var(--lime); border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9998;
+      transition: transform 0.15s; mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px; border: 1.5px solid rgba(227,254,105,0.5);
+      border-radius: 50%; position: fixed; pointer-events: none; z-index: 9997;
+    }
+    .cursor.expand { transform: scale(3); }
+    .cursor-ring.expand { transform: scale(1.5); border-color: var(--lime); }
+
+    /* Back to top */
+    #back-top {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 500;
+      width: 44px; height: 44px; background: var(--lime); color: var(--navy);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; cursor: pointer; opacity: 0; transform: translateY(20px);
+      transition: all 0.3s; box-shadow: 0 8px 24px rgba(227,254,105,0.3);
+      border: none;
+    }
+    #back-top.show { opacity: 1; transform: translateY(0); }
+    #back-top:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(227,254,105,0.5); }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.5rem 6%; display: flex; align-items: center;
+      justify-content: space-between; transition: all 0.35s;
+    }
+    nav.scrolled {
+      background: rgba(1,21,49,0.92); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(227,254,105,0.08); padding: 1rem 6%;
+    }
+    .nav-logo {
+      font-family: var(--font-h); font-weight: 700; font-size: 1.15rem;
+      color: var(--lime); text-decoration: none; letter-spacing: -0.02em;
+    }
+    .nav-logo span { color: rgba(255,255,255,0.4); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--light-blue); text-decoration: none; font-size: 0.8rem;
+      font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: color 0.3s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0;
+      width: 0; height: 1px; background: var(--lime); transition: width 0.3s;
+    }
+    .nav-links a:hover { color: var(--lime); }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-cta {
+      background: var(--lime); color: var(--navy); padding: 0.6rem 1.4rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.82rem;
+      text-decoration: none; transition: all 0.3s; letter-spacing: 0.02em;
+    }
+    .nav-cta:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(227,254,105,0.35); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { display: block; width: 22px; height: 2px; background: var(--lime); transition: all 0.3s; }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      padding: 9rem 6% 5rem; position: relative; overflow: hidden;
+    }
+    .hero-bg { position: absolute; inset: 0; overflow: hidden; }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(227,254,105,0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(227,254,105,0.025) 1px, transparent 1px);
+      background-size: 64px 64px;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, rgba(24,68,216,0.18) 0%, transparent 70%);
+      width: 700px; height: 700px; top: -150px; right: -150px;
+      animation: breathe 5s ease-in-out infinite;
+    }
+    .hero-orb2 {
+      position: absolute; border-radius: 50%;
+      background: radial-gradient(circle, rgba(227,254,105,0.06) 0%, transparent 70%);
+      width: 450px; height: 450px; bottom: 50px; left: 5%;
+      animation: breathe 7s ease-in-out infinite reverse;
+    }
+    @keyframes breathe { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.15);opacity:.75} }
+
+    .hero-content {
+      position: relative; z-index: 2; max-width: 1400px;
+      margin: 0 auto; width: 100%;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(227,254,105,0.08); border: 1px solid rgba(227,254,105,0.25);
+      padding: 0.35rem 1rem; border-radius: 50px;
+      font-size: 0.72rem; font-weight: 700; color: var(--lime);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1.5rem;
+      animation: fadeInDown 0.7s ease forwards;
+    }
+    .hero-badge::before {
+      content: ''; width: 6px; height: 6px; background: var(--lime);
+      border-radius: 50%; animation: blink 1.5s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+    .hero-name {
+      font-family: var(--font-h); font-size: clamp(3.2rem, 6.5vw, 6rem);
+      font-weight: 700; line-height: 0.95; letter-spacing: -0.04em;
+      margin-bottom: 0.6rem; opacity: 0;
+      animation: fadeInUp 0.8s ease 0.1s forwards;
+    }
+    .hero-name em { color: var(--lime); font-style: normal; }
+    .hero-subtitle {
+      font-family: var(--font-h); font-size: clamp(0.85rem, 1.5vw, 1rem);
+      font-weight: 400; color: var(--light-blue); letter-spacing: 0.18em;
+      text-transform: uppercase; margin-bottom: 1.75rem; opacity: 0;
+      animation: fadeInUp 0.8s ease 0.2s forwards;
+    }
+    .hero-desc {
+      font-size: 1.05rem; line-height: 1.8; color: rgba(255,255,255,0.65);
+      max-width: 520px; margin-bottom: 2.5rem; opacity: 0;
+      animation: fadeInUp 0.8s ease 0.3s forwards;
+    }
+    .hero-desc strong { color: var(--lime); font-weight: 600; }
+    .hero-ctas {
+      display: flex; gap: 1rem; flex-wrap: wrap; opacity: 0;
+      animation: fadeInUp 0.8s ease 0.4s forwards;
+    }
+    .btn-p {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--lime); color: var(--navy); padding: 1rem 2rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.92rem;
+      text-decoration: none; transition: all 0.3s;
+      box-shadow: 0 0 30px rgba(227,254,105,0.2);
+    }
+    .btn-p:hover { transform: translateY(-3px); box-shadow: 0 14px 42px rgba(227,254,105,0.45); }
+    .btn-s {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: transparent; color: #fff; padding: 1rem 2rem;
+      border-radius: 50px; font-weight: 600; font-size: 0.92rem;
+      text-decoration: none; border: 1px solid rgba(255,255,255,0.15); transition: all 0.3s;
+    }
+    .btn-s:hover { border-color: var(--lime); color: var(--lime); transform: translateY(-3px); }
+
+    /* Hero stat cards */
+    .hero-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem;
+      opacity: 0; animation: fadeInRight 0.8s ease 0.5s forwards;
+    }
+    .sc {
+      background: rgba(3,30,74,0.8); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1.4rem; padding: 1.6rem; position: relative;
+      overflow: hidden; transition: all 0.4s; backdrop-filter: blur(12px);
+    }
+    .sc::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--lime), transparent); opacity: 0; transition: opacity 0.4s;
+    }
+    .sc:hover { border-color: rgba(227,254,105,0.3); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+    .sc:hover::before { opacity: 1; }
+    .sc.wide { grid-column: span 2; background: linear-gradient(135deg, rgba(24,68,216,0.25), rgba(3,30,74,0.9)); border-color: rgba(24,68,216,0.3); }
+    .sc-num { font-family: var(--font-h); font-size: 2.4rem; font-weight: 700; color: var(--lime); line-height: 1; margin-bottom: 0.2rem; }
+    .sc.wide .sc-num { font-size: 3.2rem; }
+    .sc-label { font-size: 0.72rem; color: var(--light-blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.35rem; }
+    .sc-sub { font-size: 0.7rem; color: rgba(255,255,255,0.35); }
+    .sc-icon { position: absolute; top: 1.1rem; right: 1.1rem; width: 34px; height: 34px; background: rgba(227,254,105,0.08); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+
+    /* Scroll cue */
+    .scroll-cue {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--light-blue); font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; opacity: 0;
+      animation: fadeIn 1s ease 1.2s forwards, floatY 2.5s ease infinite 2.2s;
+    }
+    .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, var(--lime), transparent); }
+    @keyframes floatY { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(8px)} }
+
+    /* SECTIONS */
+    section { padding: 6rem 6%; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    .sec-tag {
+      display: inline-flex; align-items: center; gap: 0.75rem;
+      font-size: 0.72rem; font-weight: 700; color: var(--lime);
+      letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 0.85rem;
+    }
+    .sec-tag::before { content: ''; width: 28px; height: 1px; background: var(--lime); }
+    .sec-title {
+      font-family: var(--font-h); font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 700; line-height: 1.08; letter-spacing: -0.025em; margin-bottom: 1.25rem;
+    }
+    .sec-title em { color: var(--lime); font-style: normal; }
+
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal.d1 { transition-delay: 0.1s; }
+    .reveal.d2 { transition-delay: 0.2s; }
+    .reveal.d3 { transition-delay: 0.3s; }
+
+    /* STATS BAR */
+    #stats-bar { background: var(--navy-light); border-top: 1px solid rgba(227,254,105,0.08); border-bottom: 1px solid rgba(227,254,105,0.08); padding: 0; }
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); }
+    .stat-b { padding: 3rem 2rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
+    .stat-b:last-child { border-right: none; }
+    .stat-n { font-family: var(--font-h); font-size: clamp(2.2rem,3.5vw,3.5rem); font-weight: 700; color: var(--lime); line-height: 1; margin-bottom: 0.4rem; }
+    .stat-d { font-size: 0.78rem; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.08em; }
+
+    /* ABOUT */
+    #sobre-mi { background: var(--navy); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 5rem; align-items: center; }
+    .about-visual { position: relative; }
+    .about-img {
+      width: 100%; aspect-ratio: 3/4; border-radius: 2rem;
+      background: linear-gradient(135deg, var(--navy-card), rgba(24,68,216,0.25));
+      border: 1px solid rgba(227,254,105,0.12); display: flex;
+      align-items: center; justify-content: center; overflow: hidden; position: relative;
+    }
+    .about-img::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 35% 35%, rgba(24,68,216,0.3), transparent 60%);
+    }
+    .about-initials { font-family: var(--font-h); font-size: 7rem; font-weight: 700; color: rgba(227,254,105,0.08); position: relative; z-index: 1; letter-spacing: -0.05em; }
+    .about-badge {
+      position: absolute; bottom: -1.2rem; right: -1.2rem;
+      background: var(--lime); color: var(--navy); padding: 1rem 1.5rem;
+      border-radius: 1.25rem; font-weight: 700; font-size: 0.82rem;
+      box-shadow: 0 10px 32px rgba(227,254,105,0.35); line-height: 1.3;
+    }
+    .about-badge strong { font-size: 2rem; display: block; font-family: var(--font-h); }
+    .about-text p { font-size: 1.05rem; line-height: 1.85; color: rgba(255,255,255,0.65); margin-bottom: 1.4rem; }
+    .about-text strong { color: var(--lime); font-weight: 600; }
+    .skills-list { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 2rem; }
+    .sk { display: flex; align-items: center; gap: 0.65rem; font-size: 0.875rem; color: var(--light-blue); }
+    .sk::before { content: ''; width: 5px; height: 5px; background: var(--lime); border-radius: 50%; flex-shrink: 0; }
+
+    /* EXPERTISE */
+    #expertise { background: var(--navy-light); }
+    .exp-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; margin-top: 3rem; }
+    .exp-card {
+      background: var(--navy-card); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 1.5rem; padding: 2rem; position: relative; overflow: hidden; transition: all 0.4s;
+    }
+    .exp-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--lime), var(--blue));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .exp-card:hover { border-color: rgba(227,254,105,0.18); transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+    .exp-card:hover::after { transform: scaleX(1); }
+    .exp-icon { width: 50px; height: 50px; background: rgba(227,254,105,0.08); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 1.2rem; }
+    .exp-card h3 { font-family: var(--font-h); font-size: 1.05rem; font-weight: 600; margin-bottom: 0.65rem; }
+    .exp-card p { font-size: 0.85rem; color: rgba(255,255,255,0.48); line-height: 1.65; }
+    .exp-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.25rem; }
+    .tag { padding: 0.22rem 0.7rem; background: rgba(24,68,216,0.18); border: 1px solid rgba(24,68,216,0.28); border-radius: 50px; font-size: 0.72rem; color: var(--light-blue); }
+
+    /* CASOS */
+    #casos { background: var(--navy); }
+    .casos-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1.5rem; }
+    .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ftab {
+      padding: 0.45rem 1.2rem; border-radius: 50px; font-size: 0.75rem;
+      font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      cursor: pointer; border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.45); background: transparent; transition: all 0.3s; font-family: var(--font-b);
+    }
+    .ftab.active, .ftab:hover { background: var(--lime); color: var(--navy); border-color: var(--lime); }
+    .casos-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.4rem; }
+    .caso {
+      background: var(--navy-card); border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 1.5rem; padding: 2rem; transition: all 0.4s; position: relative;
+    }
+    .caso:hover { border-color: rgba(227,254,105,0.22); transform: translateY(-8px) scale(1.01); box-shadow: 0 28px 60px rgba(0,0,0,0.5); }
+    .caso-cat { display: inline-block; padding: 0.22rem 0.75rem; background: rgba(227,254,105,0.08); border: 1px solid rgba(227,254,105,0.18); border-radius: 50px; font-size: 0.68rem; font-weight: 700; color: var(--lime); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.2rem; }
+    .caso h3 { font-family: var(--font-h); font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.35; }
+    .caso-client { font-size: 0.78rem; color: var(--light-blue); margin-bottom: 1.4rem; }
+    .caso-nums { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 1.25rem; }
+    .cn { background: rgba(1,21,49,0.55); border-radius: 0.85rem; padding: 0.85rem 1rem; }
+    .cn-val { font-family: var(--font-h); font-size: 1.2rem; font-weight: 700; }
+    .cn-lbl { font-size: 0.66rem; color: rgba(255,255,255,0.38); text-transform: uppercase; letter-spacing: 0.06em; }
+    .caso-roi { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.1rem; background: linear-gradient(90deg, rgba(227,254,105,0.08), rgba(227,254,105,0.04)); border: 1px solid rgba(227,254,105,0.14); border-radius: 0.875rem; }
+    .roi-lbl { font-size: 0.7rem; color: var(--light-blue); text-transform: uppercase; letter-spacing: 0.08em; }
+    .roi-val { font-family: var(--font-h); font-size: 1.45rem; font-weight: 700; color: var(--lime); }
+
+    /* STACK */
+    #stack { background: var(--navy-light); }
+    .stack-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.4rem; margin-top: 3rem; }
+    .st-cat { background: var(--navy-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.5rem; padding: 2rem; }
+    .st-title { font-family: var(--font-h); font-size: 0.78rem; font-weight: 600; color: var(--lime); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.4rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(227,254,105,0.1); }
+    .st-items { display: flex; flex-direction: column; gap: 0.65rem; }
+    .st-item { display: flex; align-items: center; gap: 0.65rem; font-size: 0.875rem; color: rgba(255,255,255,0.65); padding: 0.45rem 0.5rem; border-radius: 0.5rem; transition: all 0.3s; }
+    .st-item:hover { background: rgba(227,254,105,0.05); color: #fff; padding-left: 1rem; }
+    .st-item::before { content: ''; width: 5px; height: 5px; background: var(--blue); border-radius: 50%; flex-shrink: 0; }
+
+    /* SECTORES TICKER */
+    #sectores { background: var(--navy); overflow: hidden; padding: 4rem 0; }
+    .ticker-wrap { overflow: hidden; margin-top: 2.5rem; }
+    .ticker { display: flex; gap: 1.5rem; width: max-content; animation: ticker 22s linear infinite; }
+    .ticker:hover { animation-play-state: paused; }
+    @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    .t-pill { white-space: nowrap; padding: 0.7rem 1.5rem; background: var(--navy-card); border: 1px solid rgba(255,255,255,0.06); border-radius: 50px; font-size: 0.875rem; color: rgba(255,255,255,0.55); display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s; cursor: default; }
+    .t-pill:hover { border-color: rgba(227,254,105,0.25); color: #fff; }
+
+    /* CONTACT */
+    #contacto { background: var(--navy-light); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .c-item { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 1.5rem; }
+    .c-icon { width: 46px; height: 46px; background: rgba(227,254,105,0.08); border: 1px solid rgba(227,254,105,0.18); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .c-lbl { font-size: 0.7rem; color: var(--light-blue); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.2rem; }
+    .c-val { font-size: 0.975rem; color: #fff; font-weight: 500; }
+    .cta-box {
+      background: linear-gradient(135deg, rgba(24,68,216,0.28), rgba(3,30,74,0.9));
+      border: 1px solid rgba(24,68,216,0.35); border-radius: 2rem; padding: 3rem;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta-box::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(227,254,105,0.04), transparent 60%); }
+    .cta-box h3 { font-family: var(--font-h); font-size: 1.7rem; font-weight: 700; margin-bottom: 1rem; position: relative; }
+    .cta-box p { color: rgba(255,255,255,0.55); margin-bottom: 2rem; line-height: 1.7; position: relative; font-size: 0.95rem; }
+    .cta-btns { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; position: relative; }
+
+    /* FOOTER */
+    footer { background: var(--navy); border-top: 1px solid rgba(255,255,255,0.05); padding: 2rem 6%; }
+    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+    .f-logo { font-family: var(--font-h); font-weight: 700; font-size: 1.05rem; color: var(--lime); }
+    .f-logo span { color: rgba(255,255,255,0.35); }
+    .f-copy { font-size: 0.78rem; color: rgba(255,255,255,0.25); }
+
+    /* KEYFRAMES */
+    @keyframes fadeInUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInDown { from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeInRight { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    /* RESPONSIVE */
+    @media(max-width:1200px) {
+      .hero-content { grid-template-columns:1fr; gap:3rem; }
+      .hero-stats { max-width:520px; }
+      .exp-grid { grid-template-columns:repeat(2,1fr); }
+      .stack-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media(max-width:900px) {
+      .stats-row { grid-template-columns:repeat(2,1fr); }
+      .stat-b:nth-child(2) { border-right:none; }
+      .stat-b { border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .about-grid { grid-template-columns:1fr; gap:3rem; }
+      .casos-grid { grid-template-columns:repeat(2,1fr); }
+      .contact-grid { grid-template-columns:1fr; gap:3rem; }
+    }
+    @media(max-width:640px) {
+      .nav-links { display:none; position:absolute; top:100%; left:0; right:0; background:rgba(1,21,49,0.97); flex-direction:column; padding:2rem 6%; border-bottom:1px solid rgba(227,254,105,0.1); gap:1.5rem; }
+      .nav-links.open { display:flex; }
+      .nav-cta { display:none; }
+      .hamburger { display:flex; }
+      .hero-stats { grid-template-columns:1fr 1fr; }
+      .exp-grid { grid-template-columns:1fr; }
+      .casos-grid { grid-template-columns:1fr; }
+      .stack-grid { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+      body { cursor:auto; }
+      .cursor,.cursor-ring { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cring"></div>
+  <button id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#hero" class="nav-logo">EO<span>.</span></a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#sobre-mi">Sobre mí</a></li>
+      <li><a href="#expertise">Expertise</a></li>
+      <li><a href="#casos">Casos</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <a href="mailto:orjuela86@gmail.com" class="nav-cta">Trabajemos juntos →</a>
+    <div class="hamburger" id="hbg" onclick="toggleNav()">
+      <span></span><span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg">
+      <div class="hero-grid"></div>
+      <div class="hero-orb"></div>
+      <div class="hero-orb2"></div>
+    </div>
+    <div class="hero-content container">
+      <div>
+        <div class="hero-badge">Disponible para proyectos</div>
+        <h1 class="hero-name">Esteban<br><em>Orjuela</em></h1>
+        <p class="hero-subtitle">Gestor de Tráfico Digital Senior</p>
+        <p class="hero-desc">
+          Especialista en <strong>Paid Media</strong> con más de <strong>7 años</strong>
+          escalando campañas en Meta Ads y TikTok Ads. Más de <strong>$3M USD invertidos</strong>
+          y <strong>+$16M USD</strong> en facturación generada para clientes de alto ticket.
+        </p>
+        <div class="hero-ctas">
+          <a href="#casos" class="btn-p">Ver Casos de Éxito →</a>
+          <a href="#contacto" class="btn-s">Contáctame</a>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="sc wide">
+          <div class="sc-icon">💰</div>
+          <div class="sc-num">+$16M USD</div>
+          <div class="sc-label">Facturación generada</div>
+          <div class="sc-sub">En múltiples nichos y modelos de negocio</div>
+        </div>
+        <div class="sc">
+          <div class="sc-icon">📈</div>
+          <div class="sc-num">$3M</div>
+          <div class="sc-label">USD Gestionados</div>
+          <div class="sc-sub">Inversión acumulada</div>
+        </div>
+        <div class="sc">
+          <div class="sc-icon">⚡</div>
+          <div class="sc-num">7+</div>
+          <div class="sc-label">Años Exp.</div>
+          <div class="sc-sub">Paid media & embudos</div>
+        </div>
+        <div class="sc">
+          <div class="sc-icon">🎯</div>
+          <div class="sc-num">160x</div>
+          <div class="sc-label">ROI Máximo</div>
+          <div class="sc-sub">VSL + closers</div>
+        </div>
+        <div class="sc">
+          <div class="sc-icon">🏆</div>
+          <div class="sc-num">8+</div>
+          <div class="sc-label">Nichos</div>
+          <div class="sc-sub">High ticket & ecommerce</div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-cue">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- STATS BAR -->
+  <section id="stats-bar">
+    <div class="stats-row">
+      <div class="stat-b reveal">
+        <div class="stat-n"><span class="counter" data-target="16" data-prefix="$" data-suffix="M+">$0M+</span></div>
+        <div class="stat-d">USD Facturación</div>
+      </div>
+      <div class="stat-b reveal d1">
+        <div class="stat-n"><span class="counter" data-target="3" data-prefix="$" data-suffix="M">$0M</span></div>
+        <div class="stat-d">USD Invertidos</div>
+      </div>
+      <div class="stat-b reveal d2">
+        <div class="stat-n"><span class="counter" data-target="7" data-suffix="+">0+</span></div>
+        <div class="stat-d">Años Experiencia</div>
+      </div>
+      <div class="stat-b reveal d3">
+        <div class="stat-n"><span class="counter" data-target="160" data-suffix="x">0x</span></div>
+        <div class="stat-d">ROI Máximo</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE MÍ -->
+  <section id="sobre-mi">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual reveal">
+          <div class="about-img">
+            <span class="about-initials">EO</span>
+          </div>
+          <div class="about-badge">
+            <strong>7+</strong>Años de<br>Experiencia
+          </div>
+        </div>
+        <div class="reveal d1">
+          <div class="sec-tag">Perfil Ejecutivo</div>
+          <h2 class="sec-title">Más que tráfico.<br><em>Resultados reales.</em></h2>
+          <div class="about-text">
+            <p>Especialista en <strong>Paid Media</strong> con más de 7 años diseñando, ejecutando y escalando embudos de venta para negocios digitales y tradicionales. Mi enfoque siempre está en el ROAS, la escalabilidad y la rentabilidad real.</p>
+            <p>He liderado campañas que han generado más de <strong>$16M USD en facturación</strong>, trabajando con modelos como lanzamientos digitales, VSL High Ticket, e-commerce, crowdfunding inmobiliario e infoproductos.</p>
+            <p>Experiencia adicional como <strong>Scrum Master y Project Manager</strong>, liderando equipos de marketing multidisciplinarios con metodologías ágiles.</p>
+          </div>
+          <div class="skills-list">
+            <div class="sk">Paid Media Strategy</div>
+            <div class="sk">Embudos VSL High Ticket</div>
+            <div class="sk">Meta Ads & TikTok Ads</div>
+            <div class="sk">Lanzamientos Digitales</div>
+            <div class="sk">E-commerce Performance</div>
+            <div class="sk">Data Driven Marketing</div>
+            <div class="sk">Scrum Master / Agile</div>
+            <div class="sk">Optimización ROAS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERTISE -->
+  <section id="expertise">
+    <div class="container">
+      <div class="reveal">
+        <div class="sec-tag">Especialidades</div>
+        <h2 class="sec-title">Expertise <em>Clave</em></h2>
+      </div>
+      <div class="exp-grid">
+        <div class="exp-card reveal">
+          <div class="exp-icon">📊</div>
+          <h3>Paid Media Strategy</h3>
+          <p>Diseño e implementación de campañas de alto rendimiento con enfoque en escalabilidad y rentabilidad sostenida.</p>
+          <div class="exp-tags"><span class="tag">Meta Ads</span><span class="tag">TikTok Ads</span><span class="tag">ROAS</span></div>
+        </div>
+        <div class="exp-card reveal d1">
+          <div class="exp-icon">🎬</div>
+          <h3>Embudos VSL High Ticket</h3>
+          <p>Construcción de embudos con Video Sales Letters para productos y servicios de alto valor con closers especializados.</p>
+          <div class="exp-tags"><span class="tag">High Ticket</span><span class="tag">VSL</span><span class="tag">Closers</span></div>
+        </div>
+        <div class="exp-card reveal d2">
+          <div class="exp-icon">🚀</div>
+          <h3>Lanzamientos Digitales</h3>
+          <p>Estrategias de product launch para infoproductos, membresías y servicios con campañas de alta conversión.</p>
+          <div class="exp-tags"><span class="tag">Product Launch</span><span class="tag">Secuencias</span><span class="tag">Webinars</span></div>
+        </div>
+        <div class="exp-card reveal">
+          <div class="exp-icon">🛒</div>
+          <h3>E-commerce Performance</h3>
+          <p>Optimización de ROAS y escalamiento de tiendas con segmentación avanzada y creatividades de alto impacto.</p>
+          <div class="exp-tags"><span class="tag">ROAS+</span><span class="tag">Remarketing</span><span class="tag">CRO</span></div>
+        </div>
+        <div class="exp-card reveal d1">
+          <div class="exp-icon">📈</div>
+          <h3>Data Driven Marketing</h3>
+          <p>Dashboards personalizados, tracking avanzado y análisis de embudos para decisiones basadas en datos.</p>
+          <div class="exp-tags"><span class="tag">Looker Studio</span><span class="tag">UTMs</span><span class="tag">Pixels</span></div>
+        </div>
+        <div class="exp-card reveal d2">
+          <div class="exp-icon">⚙️</div>
+          <h3>Gestión & Liderazgo</h3>
+          <p>Scrum Master certificado liderando equipos de marketing y optimizando procesos con metodologías ágiles.</p>
+          <div class="exp-tags"><span class="tag">Scrum</span><span class="tag">Agile</span><span class="tag">ClickUp</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CASOS DE ÉXITO -->
+  <section id="casos">
+    <div class="container">
+      <div class="casos-head">
+        <div class="reveal">
+          <div class="sec-tag">Portfolio</div>
+          <h2 class="sec-title">Casos de <em>Éxito</em></h2>
+        </div>
+        <div class="filter-row reveal">
+          <button class="ftab active" onclick="filterCasos('all',this)">Todos</button>
+          <button class="ftab" onclick="filterCasos('inmobiliario',this)">Inmobiliario</button>
+          <button class="ftab" onclick="filterCasos('high-ticket',this)">High Ticket</button>
+          <button class="ftab" onclick="filterCasos('ecommerce',this)">E-commerce</button>
+        </div>
+      </div>
+      <div class="casos-grid" id="casosGrid">
+        <div class="caso reveal" data-cat="high-ticket">
+          <div class="caso-cat">VSL High Ticket</div>
+          <h3>Revista Semana — Membresía Círculos de Mujeres</h3>
+          <p class="caso-client">@revistasemana · @revistadinero</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$5K</div><div class="cn-lbl">Inversión</div></div>
+            <div class="cn"><div class="cn-val">$800K</div><div class="cn-lbl">Facturación</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">160x</span></div>
+        </div>
+        <div class="caso reveal d1" data-cat="inmobiliario">
+          <div class="caso-cat">Inmobiliario</div>
+          <h3>Venta de Terrenos — Lanzamientos</h3>
+          <p class="caso-client">@surprofundo.cl</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$300K</div><div class="cn-lbl">Inversión total</div></div>
+            <div class="cn"><div class="cn-val">$15M</div><div class="cn-lbl">Facturación</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">50x</span></div>
+        </div>
+        <div class="caso reveal d2" data-cat="inmobiliario">
+          <div class="caso-cat">Crowdfunding Inmobiliario</div>
+          <h3>Inversión + Educación Financiera</h3>
+          <p class="caso-client">@somosrentable</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$5K/mes</div><div class="cn-lbl">Inversión</div></div>
+            <div class="cn"><div class="cn-val">$300K/mes</div><div class="cn-lbl">Retorno</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">60x</span></div>
+        </div>
+        <div class="caso reveal" data-cat="inmobiliario">
+          <div class="caso-cat">Inmobiliario Chile</div>
+          <h3>Venta de Departamentos Chile</h3>
+          <p class="caso-client">@activa_inmobiliaria</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$120K</div><div class="cn-lbl">Inversión anual</div></div>
+            <div class="cn"><div class="cn-val">$15M</div><div class="cn-lbl">Facturación</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">125x</span></div>
+        </div>
+        <div class="caso reveal d1" data-cat="high-ticket">
+          <div class="caso-cat">Nicho Finanzas</div>
+          <h3>Mentoría Portafolios Financieros</h3>
+          <p class="caso-client">@coach.financiero</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$5K</div><div class="cn-lbl">Inversión</div></div>
+            <div class="cn"><div class="cn-val">$80K</div><div class="cn-lbl">Facturación</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">16x</span></div>
+        </div>
+        <div class="caso reveal d2" data-cat="ecommerce">
+          <div class="caso-cat">E-commerce</div>
+          <h3>Beauty Center — Nicho Belleza</h3>
+          <p class="caso-client">@beautycenteredigital</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$24K</div><div class="cn-lbl">Inversión anual</div></div>
+            <div class="cn"><div class="cn-val">$300K</div><div class="cn-lbl">Facturación anual</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">12.5x</span></div>
+        </div>
+        <div class="caso reveal" data-cat="high-ticket">
+          <div class="caso-cat">Nicho Espiritual</div>
+          <h3>Programa Mentoría — Duerme Bien</h3>
+          <p class="caso-client">@dra.nuriaroure</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$8K</div><div class="cn-lbl">Inversión</div></div>
+            <div class="cn"><div class="cn-val">$70K</div><div class="cn-lbl">Facturación</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">8.75x</span></div>
+        </div>
+        <div class="caso reveal d1" data-cat="high-ticket">
+          <div class="caso-cat">Salud & Bienestar</div>
+          <h3>Método Metabólico — Adelgaza Respirando</h3>
+          <p class="caso-client">@joaquinalmeria</p>
+          <div class="caso-nums">
+            <div class="cn"><div class="cn-val">$3K/mes</div><div class="cn-lbl">Inversión</div></div>
+            <div class="cn"><div class="cn-val">$18K/mes</div><div class="cn-lbl">Retorno</div></div>
+          </div>
+          <div class="caso-roi"><span class="roi-lbl">ROI obtenido</span><span class="roi-val">4–6x</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="container">
+      <div class="reveal">
+        <div class="sec-tag">Herramientas</div>
+        <h2 class="sec-title">Stack <em>Tecnológico</em></h2>
+      </div>
+      <div class="stack-grid">
+        <div class="st-cat reveal">
+          <div class="st-title">📢 Paid Media</div>
+          <div class="st-items">
+            <div class="st-item">Meta Ads</div>
+            <div class="st-item">Facebook Ads</div>
+            <div class="st-item">Instagram Ads</div>
+            <div class="st-item">TikTok Ads</div>
+          </div>
+        </div>
+        <div class="st-cat reveal d1">
+          <div class="st-title">📊 Analítica</div>
+          <div class="st-items">
+            <div class="st-item">Looker Studio</div>
+            <div class="st-item">Mastermetrics</div>
+            <div class="st-item">UTMs</div>
+          </div>
+        </div>
+        <div class="st-cat reveal d2">
+          <div class="st-title">🤖 IA & CRM</div>
+          <div class="st-items">
+            <div class="st-item">GoHighLevel</div>
+            <div class="st-item">ChatGPT</div>
+            <div class="st-item">Gemini</div>
+            <div class="st-item">Gamma</div>
+            <div class="st-item">Antigravity</div>
+          </div>
+        </div>
+        <div class="st-cat reveal d3">
+          <div class="st-title">⚙️ Gestión</div>
+          <div class="st-items">
+            <div class="st-item">ClickUp</div>
+            <div class="st-item">Notion</div>
+            <div class="st-item">Trello</div>
+            <div class="st-item">Slack</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTORES -->
+  <section id="sectores">
+    <div class="container" style="padding:0 6%;">
+      <div class="reveal">
+        <div class="sec-tag">Experiencia</div>
+        <h2 class="sec-title" style="margin-bottom:0">He trabajado <em>con</em></h2>
+      </div>
+    </div>
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <div class="t-pill">📰 Medios de Comunicación</div>
+        <div class="t-pill">🏥 Sector Salud</div>
+        <div class="t-pill">🛒 E-commerce</div>
+        <div class="t-pill">🎓 Educación Online</div>
+        <div class="t-pill">🏪 Negocios Locales</div>
+        <div class="t-pill">🏢 Agencias</div>
+        <div class="t-pill">🏠 Inmobiliarios</div>
+        <div class="t-pill">🎯 Coaches</div>
+        <div class="t-pill">💼 Infoproductos</div>
+        <div class="t-pill">💰 Finanzas</div>
+        <!-- duplicate for seamless loop -->
+        <div class="t-pill">📰 Medios de Comunicación</div>
+        <div class="t-pill">🏥 Sector Salud</div>
+        <div class="t-pill">🛒 E-commerce</div>
+        <div class="t-pill">🎓 Educación Online</div>
+        <div class="t-pill">🏪 Negocios Locales</div>
+        <div class="t-pill">🏢 Agencias</div>
+        <div class="t-pill">🏠 Inmobiliarios</div>
+        <div class="t-pill">🎯 Coaches</div>
+        <div class="t-pill">💼 Infoproductos</div>
+        <div class="t-pill">💰 Finanzas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="reveal">
+          <div class="sec-tag">Hablemos</div>
+          <h2 class="sec-title">¿Listo para <em>escalar</em>?</h2>
+          <p style="color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:3rem;font-size:1rem;">
+            Si tienes un negocio con potencial y quieres llevarlo al siguiente nivel con campañas que realmente generen retorno, conversemos.
+          </p>
+          <div class="c-item">
+            <div class="c-icon">✉️</div>
+            <div><div class="c-lbl">Email</div><div class="c-val">orjuela86@gmail.com</div></div>
+          </div>
+          <div class="c-item">
+            <div class="c-icon">📱</div>
+            <div><div class="c-lbl">Teléfono / WhatsApp</div><div class="c-val">(57) 301-658-0333</div></div>
+          </div>
+          <div class="c-item">
+            <div class="c-icon">📍</div>
+            <div><div class="c-lbl">Ubicación</div><div class="c-val">Bogotá, Colombia</div></div>
+          </div>
+        </div>
+        <div class="reveal d1">
+          <div class="cta-box">
+            <h3>¿Tienes un proyecto en mente?</h3>
+            <p>Cuéntame sobre tu negocio, tus metas y tu presupuesto. Evaluaré si puedo ayudarte a alcanzar resultados extraordinarios.</p>
+            <div class="cta-btns">
+              <a href="mailto:orjuela86@gmail.com" class="btn-p" style="justify-content:center;width:100%;">Escribirme ahora →</a>
+              <a href="https://wa.me/573016580333" class="btn-s" style="justify-content:center;width:100%;">📲 Chatear en WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="f-logo">EO<span> — Esteban Orjuela</span></div>
+      <div class="f-copy">© 2026 · Gestor de Tráfico Digital Senior · Bogotá, Colombia</div>
+    </div>
+  </footer>
+
+  <script>
+    // Progress bar
+    const pb = document.getElementById('progress-bar');
+    window.addEventListener('scroll', () => {
+      const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      pb.style.width = pct + '%';
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+      document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+    });
+
+    // Mobile nav
+    function toggleNav() {
+      document.getElementById('navLinks').classList.toggle('open');
+    }
+    document.querySelectorAll('.nav-links a').forEach(a => a.addEventListener('click', () => {
+      document.getElementById('navLinks').classList.remove('open');
+    }));
+
+    // Custom cursor
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = (mx-5)+'px'; cur.style.top = (my-5)+'px'; });
+    (function animRing() {
+      rx += (mx - rx - 18) * 0.12; ry += (my - ry - 18) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(animRing);
+    })();
+    document.querySelectorAll('a,button,.caso,.exp-card,.sc').forEach(el => {
+      el.addEventListener('mouseenter', () => { cur.classList.add('expand'); ring.classList.add('expand'); });
+      el.addEventListener('mouseleave', () => { cur.classList.remove('expand'); ring.classList.remove('expand'); });
+    });
+
+    // Reveal on scroll
+    const revObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    // Counter animation
+    function runCounter(el) {
+      const target = +el.dataset.target;
+      const pre = el.dataset.prefix || '';
+      const suf = el.dataset.suffix || '';
+      let cur = 0;
+      const inc = target / 80;
+      const t = setInterval(() => {
+        cur = Math.min(cur + inc, target);
+        el.textContent = pre + (Number.isInteger(target) ? Math.floor(cur) : cur.toFixed(1)) + suf;
+        if (cur >= target) clearInterval(t);
+      }, 20);
+    }
+    const cntObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { runCounter(e.target); cntObs.unobserve(e.target); } });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.counter').forEach(el => cntObs.observe(el));
+
+    // Filter casos
+    function filterCasos(cat, btn) {
+      document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.caso').forEach(card => {
+        const show = cat === 'all' || card.dataset.cat === cat;
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(16px)';
+        if (show) {
+          card.style.display = 'block';
+          requestAnimationFrame(() => {
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          });
+        } else {
+          card.style.transition = 'opacity 0.25s ease';
+          setTimeout(() => { card.style.display = 'none'; }, 250);
+        }
+      });
+    }
+
+    // Smooth scroll for anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) t.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>
