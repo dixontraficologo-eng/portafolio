@@ -395,6 +395,94 @@
       body { cursor:auto; }
       .cursor,.cursor-ring { display:none; }
     }
+
+    /* TICKER CLIENTES */
+    #clientes {
+      background: var(--navy-light);
+      padding: 4rem 0;
+      overflow: hidden;
+    }
+    .clientes-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      padding: 0 2rem;
+    }
+    .clientes-header .sec-tag { justify-content: center; }
+    .clientes-header h2 {
+      font-family: var(--font-h); font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 700; margin-top: 0.5rem;
+    }
+    .clientes-header h2 em { color: var(--lime); font-style: normal; }
+    .ticker-wrap {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    .ticker-wrap::before,
+    .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 120px;
+      z-index: 2;
+    }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--navy-light), transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--navy-light), transparent); }
+    .ticker-track {
+      display: flex;
+      gap: 1.5rem;
+      width: max-content;
+      animation: ticker 30s linear infinite;
+    }
+    .ticker-track:hover { animation-play-state: paused; }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .ticker-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 100px;
+      padding: 0.6rem 1.4rem;
+      white-space: nowrap;
+      transition: border-color 0.3s;
+      flex-shrink: 0;
+    }
+    .ticker-item:hover { border-color: rgba(227,254,105,0.3); }
+    .ticker-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .ticker-name {
+      font-family: var(--font-h);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .ticker-sector {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .ticker-cats {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 2rem;
+      padding: 0 2rem;
+    }
+    .ticker-cat-tag {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.5);
+      font-size: 0.78rem;
+      padding: 0.3rem 0.9rem;
+      border-radius: 100px;
+    }
   </style>
 </head>
 <body>
@@ -582,6 +670,65 @@
           <div class="exp-tags"><span class="tag">Scrum</span><span class="tag">Agile</span><span class="tag">ClickUp</span></div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- CLIENTES -->
+  <section id="clientes">
+    <div class="clientes-header reveal">
+      <div class="sec-tag">Clientes</div>
+      <h2>He trabajado <em>con</em></h2>
+    </div>
+    <div class="ticker-wrap">
+      <div class="ticker-track">
+        <!-- Fila 1 -->
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e63946"></span><span class="ticker-name">Revista Semana</span><span class="ticker-sector">Medios</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#457b9d"></span><span class="ticker-name">Revista Dinero</span><span class="ticker-sector">Medios</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#2a9d8f"></span><span class="ticker-name">Berlitz</span><span class="ticker-sector">Educación</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e9c46a"></span><span class="ticker-name">ECMA</span><span class="ticker-sector">Educación</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#f4a261"></span><span class="ticker-name">Sur Profundo</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#a8dadc"></span><span class="ticker-name">Activa Inmobiliaria</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#c77dff"></span><span class="ticker-name">Turpial</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#80b918"></span><span class="ticker-name">Somosrentable</span><span class="ticker-sector">Finanzas</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e63946"></span><span class="ticker-name">MindSel</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e76f51"></span><span class="ticker-name">Adshouse</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#E3FE69"></span><span class="ticker-name">Antigravity</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#f72585"></span><span class="ticker-name">Beauty Center</span><span class="ticker-sector">E-commerce</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#4cc9f0"></span><span class="ticker-name">Haskell</span><span class="ticker-sector">E-commerce</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#7b2d8b"></span><span class="ticker-name">Dra. Nuria Roure</span><span class="ticker-sector">Salud</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#ffd60a"></span><span class="ticker-name">Coach Financiero</span><span class="ticker-sector">Coaching</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#06d6a0"></span><span class="ticker-name">Joaquín Almería</span><span class="ticker-sector">Coaching</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#ef233c"></span><span class="ticker-name">Valenti</span><span class="ticker-sector">Moda</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#3a86ff"></span><span class="ticker-name">UC Online</span><span class="ticker-sector">Educación</span></div>
+        <!-- Duplicado para loop infinito -->
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e63946"></span><span class="ticker-name">Revista Semana</span><span class="ticker-sector">Medios</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#457b9d"></span><span class="ticker-name">Revista Dinero</span><span class="ticker-sector">Medios</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#2a9d8f"></span><span class="ticker-name">Berlitz</span><span class="ticker-sector">Educación</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e9c46a"></span><span class="ticker-name">ECMA</span><span class="ticker-sector">Educación</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#f4a261"></span><span class="ticker-name">Sur Profundo</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#a8dadc"></span><span class="ticker-name">Activa Inmobiliaria</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#c77dff"></span><span class="ticker-name">Turpial</span><span class="ticker-sector">Inmobiliario</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#80b918"></span><span class="ticker-name">Somosrentable</span><span class="ticker-sector">Finanzas</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e63946"></span><span class="ticker-name">MindSel</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#e76f51"></span><span class="ticker-name">Adshouse</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#E3FE69"></span><span class="ticker-name">Antigravity</span><span class="ticker-sector">Agencia</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#f72585"></span><span class="ticker-name">Beauty Center</span><span class="ticker-sector">E-commerce</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#4cc9f0"></span><span class="ticker-name">Haskell</span><span class="ticker-sector">E-commerce</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#7b2d8b"></span><span class="ticker-name">Dra. Nuria Roure</span><span class="ticker-sector">Salud</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#ffd60a"></span><span class="ticker-name">Coach Financiero</span><span class="ticker-sector">Coaching</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#06d6a0"></span><span class="ticker-name">Joaquín Almería</span><span class="ticker-sector">Coaching</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#ef233c"></span><span class="ticker-name">Valenti</span><span class="ticker-sector">Moda</span></div>
+        <div class="ticker-item"><span class="ticker-dot" style="background:#3a86ff"></span><span class="ticker-name">UC Online</span><span class="ticker-sector">Educación</span></div>
+      </div>
+    </div>
+    <div class="ticker-cats reveal">
+      <span class="ticker-cat-tag">📺 Medios</span>
+      <span class="ticker-cat-tag">🏠 Inmobiliario</span>
+      <span class="ticker-cat-tag">🎓 Educación</span>
+      <span class="ticker-cat-tag">🏥 Salud</span>
+      <span class="ticker-cat-tag">🛒 E-commerce</span>
+      <span class="ticker-cat-tag">🎯 Agencias</span>
+      <span class="ticker-cat-tag">🧠 Coaching</span>
     </div>
   </section>
 
