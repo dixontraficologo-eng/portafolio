@@ -236,7 +236,7 @@
 
     /* STATS BAR */
     #stats-bar { background: var(--navy-light); border-top: 1px solid rgba(227,254,105,0.08); border-bottom: 1px solid rgba(227,254,105,0.08); padding: 0; }
-    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); }
+    .stats-row { display: grid; grid-template-columns: repeat(5,1fr); }
     .stat-b { padding: 3rem 2rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.05); }
     .stat-b:last-child { border-right: none; }
     .stat-n { font-family: var(--font-h); font-size: clamp(2.2rem,3.5vw,3.5rem); font-weight: 700; color: var(--lime); line-height: 1; margin-bottom: 0.4rem; }
@@ -375,8 +375,8 @@
       .stack-grid { grid-template-columns:repeat(2,1fr); }
     }
     @media(max-width:900px) {
-      .stats-row { grid-template-columns:repeat(2,1fr); }
-      .stat-b:nth-child(2) { border-right:none; }
+      .stats-row { grid-template-columns:repeat(3,1fr); }
+      .stat-b:nth-child(3) { border-right:none; }
       .stat-b { border-bottom: 1px solid rgba(255,255,255,0.05); }
       .about-grid { grid-template-columns:1fr; gap:3rem; }
       .casos-grid { grid-template-columns:repeat(2,1fr); }
@@ -391,7 +391,7 @@
       .exp-grid { grid-template-columns:1fr; }
       .casos-grid { grid-template-columns:1fr; }
       .stack-grid { grid-template-columns:1fr; }
-      .stats-row { grid-template-columns:1fr 1fr; }
+      .stats-row { grid-template-columns:1fr 1fr 1fr; }
       body { cursor:auto; }
       .cursor,.cursor-ring { display:none; }
     }
@@ -560,6 +560,12 @@
           <div class="sc-label">Nichos</div>
           <div class="sc-sub">High ticket & ecommerce</div>
         </div>
+        <div class="sc">
+          <div class="sc-icon">🤝</div>
+          <div class="sc-num">42+</div>
+          <div class="sc-label">Marcas Confiaron</div>
+          <div class="sc-sub">En 7 sectores diferentes</div>
+        </div>
       </div>
     </div>
     <div class="scroll-cue">
@@ -586,6 +592,10 @@
       <div class="stat-b reveal d3">
         <div class="stat-n"><span class="counter" data-target="160" data-suffix="x">0x</span></div>
         <div class="stat-d">ROI Máximo</div>
+      </div>
+      <div class="stat-b reveal d4">
+        <div class="stat-n"><span class="counter" data-target="42" data-suffix="+">0+</span></div>
+        <div class="stat-d">Marcas & Clientes</div>
       </div>
     </div>
   </section>
